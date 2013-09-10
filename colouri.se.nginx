@@ -1,0 +1,85 @@
+# This is the configuration file for http://colouri.se/
+# Evidently, this server is running nginx with the native XSLT processor.
+
+server {
+    listen [::]:80;
+
+	server_name  colouri.se;
+
+	access_log  /var/log/nginx/colouri.se.access.log;
+
+	xslt_types application/xhtml+xml;
+
+	root /srv/http/colouri.se;
+
+    if ($request_uri ~ ^/x?html/ )
+    {
+        rewrite ^/x?html/(.*)$ /$1 permanent;
+    }
+
+	location / {
+		add_header Vary Accept;
+
+        if ($uri ~ ^/\.git)
+        {
+            break;
+        }
+
+		rewrite ^/$ /hsl redirect;
+
+        # Google+ seems to choke on XHTML
+		if ($http_user_agent ~* Google)
+		{
+			rewrite ^(.*)$ /html$1 last;
+		}
+		if ($http_accept ~* application/xhtml\+xml)
+		{
+			rewrite ^(.*)$ /xhtml$1 last;
+		}
+
+		rewrite ^(.*)$ /html$1 last;
+	}
+
+	location /.git {
+        error_page 403 /source-code;
+	}
+
+	location /css {
+		try_files $uri.css $uri =404;
+	}
+
+	location /js {
+		try_files $uri.js $uri =404;
+	}
+
+	location /xhtml {
+		alias /srv/http/colouri.se;
+		try_files $uri.xml $uri.xhtml /generated$uri;
+
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-page.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-style-colouri.se.xslt;
+	}
+
+	location /html {
+		alias /srv/http/colouri.se;
+		try_files $uri.xml $uri.xhtml /generated$uri;
+
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-page.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-style-colouri.se.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/html-post-process.xslt;
+	}
+
+    location /generated/xhtml {
+		proxy_pass http://unix:/var/tmp/colourise.socket:;
+
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-page.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-style-colouri.se.xslt;
+    }
+    location /generated/html {
+		proxy_pass http://unix:/var/tmp/colourise.socket:;
+
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-page.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/xhtml-style-colouri.se.xslt;
+		xslt_stylesheet /srv/http/colouri.se/xslt/html-post-process.xslt;
+    }
+}
