@@ -87,6 +87,53 @@ namespace efgy
                         scalar &saturation;
                         scalar &lightness;
 
+                        value (const typename RGB<Q>::value &v)
+                            : space<Q,3>::value(),
+                              hue(data[0]), saturation(data[1]), lightness(data[2])
+                            {
+                                scalar min = v.red;
+                                scalar max = v.red;
+                                if (v.green < min) { min = v.green; }
+                                if (v.blue  < min) { min = v.blue;  }
+                                if (v.green > max) { max = v.green; }
+                                if (v.blue  > max) { max = v.blue;  }
+
+                                scalar C = max - min;
+                                scalar h = scalar(0);
+                                if (max == v.red)
+                                {
+                                    h = (v.green - v.blue) / C;
+                                }
+                                if (max == v.green)
+                                {
+                                    h = (v.blue - v.red) / C + scalar(2);
+                                }
+                                if (max == v.blue)
+                                {
+                                    h = (v.red - v.green) / C + scalar(4);
+                                }
+                                while (h >= scalar(6))
+                                {
+                                    h -= scalar(6);
+                                }
+
+                                hue = h / scalar(6);
+                                lightness = (max + min) / scalar(2);
+                                if (C == math::numeric::zero())
+                                {
+                                    saturation = 0;
+                                }
+                                else
+                                {
+                                    scalar a = scalar(2) * lightness - 1;
+                                    if (a < math::numeric::zero())
+                                    {
+                                        a = -a;
+                                    }
+                                    saturation = C/(scalar(1) - a);
+                                }
+                            }
+
                         operator typename RGB<Q>::value (void) const
                         {
                             scalar a = scalar(2)*lightness - 1;

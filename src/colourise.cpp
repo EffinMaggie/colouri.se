@@ -136,6 +136,9 @@ class processColourise
 
                     reply  = "<set xmlns='http://colouri.se/2012'>";
                     reply += xml(t);
+
+                    HSL<fraction>::value tr = t;
+                    reply += xml(tr);
                     reply += "</set>";
                 }
 

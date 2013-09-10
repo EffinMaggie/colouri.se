@@ -13,7 +13,7 @@ html
 body
 {
     font-family: sans-serif;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.85);
     min-height: 100%;
     padding-left: 2em;
 }
@@ -60,4 +60,9 @@ h1 + ul
 h1 + ul li
 {
     display: inline-block;
+}
+
+h1, h2, h3, h4, h5, h6, p, pre, code
+{
+    margin: 1em;
 }
