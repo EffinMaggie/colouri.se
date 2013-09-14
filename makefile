@@ -6,19 +6,17 @@ ZIP:=zip
 SQLITE3:=sqlite3
 
 # data files
-DATABASES:=
+DATABASES:=colourise.sqlite3
 
 # don't delete intermediary files
 .SECONDARY:
 
 # meta rules
-all: colourise
+all: $(DATABASES) colourise
 run: run-colourise
 clean:
 	rm -f $(DATABASES) colourise; true
 scrub: clean
-
-databases: $(DATABASES) colourise
 
 # pattern rules for databases
 %.sqlite3: src/%.sql

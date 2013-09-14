@@ -36,8 +36,11 @@
       </head>
       <body>
         <ul class="set">
-          <xsl:apply-templates select="node()"/>
+          <xsl:for-each select="colour:colour">
+            <li><xsl:apply-templates select="."/></li>
+          </xsl:for-each>
         </ul>
+        <xsl:apply-templates select="colour:picker"/>
       </body>
     </html>
   </xsl:template>
@@ -61,8 +64,11 @@
       </head>
       <body>
         <ul class="set">
-          <xsl:apply-templates select="node()"/>
+          <xsl:for-each select="colour:colour">
+            <li><xsl:apply-templates select="."/></li>
+          </xsl:for-each>
         </ul>
+        <xsl:apply-templates select="colour:picker"/>
       </body>
     </html>
   </xsl:template>
@@ -80,7 +86,16 @@
       <xsl:when test="@lightnessDenominator"><xsl:value-of select="@lightnessDenominator"/></xsl:when>
       <xsl:otherwise>1</xsl:otherwise>
     </xsl:choose></xsl:variable>
-    <li class="colour" style="background: hsl({@hue div $hueDenominator * 360},{@saturation div $saturationDenominator * 100}%,{@lightness div $lightnessDenominator * 100}%)">(H, S, L) = (<xsl:value-of select="@hue"/>/<xsl:value-of select="$hueDenominator"/>, <xsl:value-of select="@saturation"/>/<xsl:value-of select="$saturationDenominator"/>, <xsl:value-of select="@lightness"/>/<xsl:value-of select="$lightnessDenominator"/>)</li>
+    <a style="background: hsl({@hue div $hueDenominator * 360},{@saturation div $saturationDenominator * 100}%,{@lightness div $lightnessDenominator * 100}%)"
+       href="/hsl:{@hue}/{$hueDenominator}:{@saturation}/{$saturationDenominator}:{@lightness}/{$lightnessDenominator}">
+      <xsl:choose>
+        <xsl:when test="@type='small'">
+          <xsl:attribute name="class">colour small</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="class">colour</xsl:attribute>(H, S, L) = (<xsl:value-of select="@hue"/>/<xsl:value-of select="$hueDenominator"/>, <xsl:value-of select="@saturation"/>/<xsl:value-of select="$saturationDenominator"/>, <xsl:value-of select="@lightness"/>/<xsl:value-of select="$lightnessDenominator"/>)</xsl:otherwise>
+      </xsl:choose>
+    </a>
   </xsl:template>
 
   <xsl:template match="colour:colour[@space='rgb']">
@@ -96,6 +111,29 @@
       <xsl:when test="@blueDenominator"><xsl:value-of select="@blueDenominator"/></xsl:when>
       <xsl:otherwise>1</xsl:otherwise>
     </xsl:choose></xsl:variable>
-    <li class="colour" style="background: rgb({@red div $redDenominator * 100}%,{@green div $greenDenominator * 100}%,{@blue div $blueDenominator * 100}%)">(R, G, B) = (<xsl:value-of select="@red"/>/<xsl:value-of select="$redDenominator"/>, <xsl:value-of select="@green"/>/<xsl:value-of select="$greenDenominator"/>, <xsl:value-of select="@blue"/>/<xsl:value-of select="$blueDenominator"/>)</li>
+    <a style="background: rgb({@red div $redDenominator * 100}%,{@green div $greenDenominator * 100}%,{@blue div $blueDenominator * 100}%)"
+       href="/rgb:{@red}/{$redDenominator}:{@green}/{$greenDenominator}:{@blue}/{$blueDenominator}">
+      <xsl:choose>
+        <xsl:when test="@type='small'">
+          <xsl:attribute name="class">colour small</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="class">colour</xsl:attribute>(R, G, B) = (<xsl:value-of select="@red"/>/<xsl:value-of select="$redDenominator"/>, <xsl:value-of select="@green"/>/<xsl:value-of select="$greenDenominator"/>, <xsl:value-of select="@blue"/>/<xsl:value-of select="$blueDenominator"/>)</xsl:otherwise>
+      </xsl:choose>
+    </a>
+  </xsl:template>
+
+  <xsl:template match="colour:picker">
+    <table class="picker">
+      <xsl:apply-templates select="colour:set"/>
+    </table>
+  </xsl:template>
+
+  <xsl:template match="colour:picker/colour:set">
+    <tr>
+      <xsl:for-each select="colour:colour">
+        <td><xsl:apply-templates select="."/></td>
+      </xsl:for-each>
+    </tr>
   </xsl:template>
 </xsl:stylesheet>

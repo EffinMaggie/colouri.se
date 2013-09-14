@@ -38,16 +38,17 @@ namespace efgy
     namespace render
     {
         template <class Q>
-        std::string xml (const Q &value)
+        std::string xml (const Q &value, bool small = false)
         {
             throw "no conversion to XML known";
             return "";
         }
 
         template <>
-        std::string xml (const colour::HSL<math::fraction>::value &value)
+        std::string xml (const colour::HSL<math::fraction>::value &value, bool small)
         {
             return std::string("<colour xmlns='http://colouri.se/2012' space='hsl'")
+                 + (small ? " type='small'" : "")
                  + " hue='" + data::intToString<long long>(value.hue.numerator) + "'"
                  + (value.hue.denominator != math::numeric::one()
                    ? " hueDenominator='" + data::intToString<long long>(value.hue.denominator) + "'"
@@ -64,9 +65,10 @@ namespace efgy
         }
 
         template <>
-        std::string xml (const colour::RGB<math::fraction>::value &value)
+        std::string xml (const colour::RGB<math::fraction>::value &value, bool small)
         {
             return std::string("<colour xmlns='http://colouri.se/2012' space='rgb'")
+                 + (small ? " type='small'" : "")
                  + " red='" + data::intToString<long long>(value.red.numerator) + "'"
                  + (value.red.denominator != math::numeric::one()
                    ? " redDenominator='" + data::intToString<long long>(value.red.denominator) + "'"
@@ -80,6 +82,77 @@ namespace efgy
                    ? " blueDenominator='" + data::intToString<long long>(value.blue.denominator) + "'"
                    : "")
                  + "/>";
+        }
+
+        template <class Q>
+        std::string xmlpicker (const Q &value)
+        {
+            throw "no conversion to XML known";
+            return "";
+        }
+
+        static const int pickerResolution = 8;
+
+        template <class Q>
+        std::string xmlpicker3d (const typename Q::value &value)
+        {
+            std::string s = "<picker xmlns='http://colouri.se/2012'>";
+            typename Q::value v = value;
+            if (v.data[0].denominator == math::numeric::zero())
+            {
+                v.data[0] = typename Q::scalar(0);
+            }
+            if (v.data[1].denominator == math::numeric::zero())
+            {
+                v.data[1] = typename Q::scalar(0);
+            }
+            if (v.data[2].denominator == math::numeric::zero())
+            {
+                v.data[2] = typename Q::scalar(0);
+            }
+            typename Q::scalar al = v.data[0] / typename Q::scalar(pickerResolution);
+            typename Q::scalar ar = (typename Q::scalar(1) - v.data[0]) / typename Q::scalar(pickerResolution);
+            typename Q::scalar bl = v.data[1] / typename Q::scalar(pickerResolution);
+            typename Q::scalar br = (typename Q::scalar(1) - v.data[1]) / typename Q::scalar(pickerResolution);
+            typename Q::scalar cl = v.data[2] / typename Q::scalar(pickerResolution);
+            typename Q::scalar cr = (typename Q::scalar(1) - v.data[2]) / typename Q::scalar(pickerResolution);
+
+            v.data[1] = typename Q::scalar(0);
+            for (int y = -pickerResolution; y <= pickerResolution; y++)
+            {
+                s += "<set>";
+                v.data[1] = (y < 0) ? (value.data[1] - bl * -y) : (value.data[1] + br * y);
+                for (int x = -pickerResolution; x <= pickerResolution; x++)
+                {
+                    v.data[0] = (x < 0) ? (value.data[0] - al * -x) : (value.data[0] + ar * x);
+                    s += xml (v, true);
+                }
+                s += "</set>";
+            }
+
+            s += "<set>";
+            v.data[0] = value.data[0];
+            v.data[1] = value.data[1];
+            for (int z = -pickerResolution; z <= pickerResolution; z++)
+            {
+                v.data[2] = (z < 0) ? (value.data[2] - cl * -z) : (value.data[2] + cr * z);
+                s += xml (v, true);
+            }
+            s += "</set>";
+
+            return s += "</picker>";
+        }
+
+        template <>
+        std::string xmlpicker (const colour::HSL<math::fraction>::value &value)
+        {
+            return xmlpicker3d<colour::HSL<math::fraction> > (value);
+        }
+
+        template <>
+        std::string xmlpicker (const colour::RGB<math::fraction>::value &value)
+        {
+            return xmlpicker3d<colour::RGB<math::fraction> > (value);
         }
     };
 };

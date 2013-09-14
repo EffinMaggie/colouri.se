@@ -57,9 +57,8 @@ class processColourise
         {
             static const regex rq
                 ("/generated/(x?html|svg)/("
-                 "(hsl:(\\d+)(/(\\d+))?:(\\d+)(/(\\d+))?:(\\d+)(/(\\d+))?)"
-                 "|"
-                 "(rgb:(\\d+)(/(\\d+))?:(\\d+)(/(\\d+))?:(\\d+)(/(\\d+))?)"
+                  "(hsl:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
+                 "|(rgb:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
                  ")");
             boost::smatch matches;
 
@@ -81,14 +80,29 @@ class processColourise
                     if (matches[6].matched)
                     {
                         hDenominator = atoi(string(matches[6]).c_str());
+                        if (hDenominator == 0)
+                        {
+                            hNumerator = 0;
+                            hDenominator = 1;
+                        }
                     }
                     if (matches[9].matched)
                     {
                         sDenominator = atoi(string(matches[9]).c_str());
+                        if (sDenominator == 0)
+                        {
+                            sNumerator = 0;
+                            sDenominator = 1;
+                        }
                     }
                     if (matches[12].matched)
                     {
                         lDenominator = atoi(string(matches[12]).c_str());
+                        if (lDenominator == 0)
+                        {
+                            lNumerator = 0;
+                            lDenominator = 1;
+                        }
                     }
 
                     if (hNumerator >= hDenominator)
@@ -105,6 +119,9 @@ class processColourise
 
                     RGB<fraction>::value tr = t;
                     reply += xml(tr);
+
+                    reply += xmlpicker (t);
+
                     reply += "</set>";
                 }
 
@@ -120,14 +137,29 @@ class processColourise
                     if (matches[16].matched)
                     {
                         rDenominator = atoi(string(matches[16]).c_str());
+                        if (rDenominator == 0)
+                        {
+                            rNumerator = 0;
+                            rDenominator = 1;
+                        }
                     }
                     if (matches[19].matched)
                     {
                         gDenominator = atoi(string(matches[19]).c_str());
+                        if (gDenominator == 0)
+                        {
+                            gNumerator = 0;
+                            gDenominator = 1;
+                        }
                     }
                     if (matches[22].matched)
                     {
                         bDenominator = atoi(string(matches[22]).c_str());
+                        if (bDenominator == 0)
+                        {
+                            bNumerator = 0;
+                            bDenominator = 1;
+                        }
                     }
 
                     RGB<fraction>::value t (fraction(rNumerator, rDenominator),
@@ -139,6 +171,9 @@ class processColourise
 
                     HSL<fraction>::value tr = t;
                     reply += xml(tr);
+
+                    reply += xmlpicker (t);
+
                     reply += "</set>";
                 }
 

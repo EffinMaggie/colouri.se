@@ -104,11 +104,11 @@ namespace efgy
                                 {
                                     h = (v.green - v.blue) / C;
                                 }
-                                if (max == v.green)
+                                else if (max == v.green)
                                 {
                                     h = (v.blue - v.red) / C + scalar(2);
                                 }
-                                if (max == v.blue)
+                                else if (max == v.blue)
                                 {
                                     h = (v.red - v.green) / C + scalar(4);
                                 }
@@ -121,7 +121,7 @@ namespace efgy
                                 lightness = (max + min) / scalar(2);
                                 if (C == math::numeric::zero())
                                 {
-                                    saturation = 0;
+                                    saturation = scalar(0);
                                 }
                                 else
                                 {

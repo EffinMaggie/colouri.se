@@ -25,7 +25,7 @@ server {
             break;
         }
 
-		rewrite ^/$ /hsl redirect;
+		rewrite ^/$ /hsl:0:1:1 redirect;
 
         # Google+ seems to choke on XHTML
 		if ($http_user_agent ~* Google)

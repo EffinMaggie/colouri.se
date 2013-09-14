@@ -15,7 +15,7 @@ body
     font-family: sans-serif;
     background: rgba(255,255,255,0.85);
     min-height: 100%;
-    padding-left: 2em;
+    padding: 1em 2em;
 }
 
 ul, ul li
@@ -28,22 +28,46 @@ ul.set
     font-size: 0.8em;
 }
 
-ul.set li.colour
+ul.set li
 {
-    display: inline-block;
-    padding: 6em 1em 1em 1em;
-    margin: 1em;
-    width: 100%;
-    max-width: 20em;
+    display: block;
 }
 
-ul.set li.colour:after
+ul.set .colour
+{
+    display: block;
+    padding: 6em 1em 1em 1em;
+    margin: 1em 0;
+}
+
+ul.set .colour:after
 {
     background: rgba(255,255,255,0.6);
     display: block;
     content: " ";
     height: 3em;
     margin: -2em -1em -1em -1em;
+}
+
+ul.set a.small:after
+{
+    display: none;
+}
+
+ul.set a.small
+{
+    display: inline-block;
+    width: auto;
+    margin: 0;
+    padding: 0.5em;
+    height: 1em;
+}
+
+table.picker .colour
+{
+    content: " ";
+    padding: 0em 1em;
+    height: 1em;
 }
 
 h1
@@ -55,6 +79,9 @@ h1 + ul
 {
     padding: 1em;
     text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 h1 + ul li
@@ -65,4 +92,16 @@ h1 + ul li
 h1, h2, h3, h4, h5, h6, p, pre, code
 {
     margin: 1em;
+}
+
+a
+{
+    text-decoration: none;
+    color: #444;
+}
+
+a:hover
+{
+    text-decoration: underline;
+    color: #777;
 }
