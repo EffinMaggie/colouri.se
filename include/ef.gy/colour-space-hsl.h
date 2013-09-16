@@ -48,7 +48,7 @@ namespace efgy
                 class value : public space<Q,3>::value
                 {
                     public:
-                        using space<Q,3>::vector::data;
+                        using space<Q,3>::value::data;
 
                         value ()
                             : space<Q,3>::value(),
