@@ -38,13 +38,18 @@ namespace efgy
         template<typename T>
         std::string intToString (T pNumber, const int pBase = 10)
         {
-            bool negative = pNumber < 0;
+            bool negative = pNumber < math::numeric::zero();
             std::string rv = "";
+
+            if (negative)
+            {
+                pNumber = -pNumber;
+            }
 
             while (pNumber > math::numeric::zero())
             {
                 const char t[2] = { "0123456789abcdefghijklmnopqrstuvwxyz"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ#,."[(pNumber % pBase)],
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ#,."[(pNumber % T(pBase))],
                                     0 };
                 std::string tq(t);
 

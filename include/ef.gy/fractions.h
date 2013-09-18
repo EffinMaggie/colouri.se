@@ -335,6 +335,16 @@ namespace efgy
                     }
             };
 
+            template <typename N>
+            fractional<N> reciprocal (const fractional<N> &f)
+            {
+                if ((f.numerator == zero()) || (f.denominator == zero()))
+                {
+                    return fractional<N>(N(0));
+                }
+
+                return fractional<N>(f.denominator, f.numerator);
+            }
         };
 
         typedef numeric::fractional<number> fraction;

@@ -31,6 +31,7 @@
 
 #include <ef.gy/render.h>
 #include <ef.gy/string.h>
+#include <ef.gy/continued-fractions.h>
 #include <string>
 
 namespace efgy
@@ -45,41 +46,51 @@ namespace efgy
         }
 
         template <>
-        std::string xml (const colour::HSL<math::fraction>::value &value, bool small)
+        std::string xml (const colour::HSL<math::fraction>::value &pValue, bool small)
         {
+            colour::HSL<math::fraction>::value value = pValue;
+            value.hue = math::numeric::round(value.hue);
+            value.saturation = math::numeric::round(value.saturation);
+            value.lightness = math::numeric::round(value.lightness);
+
             return std::string("<colour xmlns='http://colouri.se/2012' space='hsl'")
                  + (small ? " type='small'" : "")
-                 + " hue='" + data::intToString<long long>(value.hue.numerator) + "'"
+                 + " hue='" + data::intToString(value.hue.numerator) + "'"
                  + (value.hue.denominator != math::numeric::one()
-                   ? " hueDenominator='" + data::intToString<long long>(value.hue.denominator) + "'"
+                   ? " hueDenominator='" + data::intToString(value.hue.denominator) + "'"
                    : "")
-                 + " saturation='" + data::intToString<long long>(value.saturation.numerator) + "'"
+                 + " saturation='" + data::intToString(value.saturation.numerator) + "'"
                  + (value.saturation.denominator != math::numeric::one()
-                   ? " saturationDenominator='" + data::intToString<long long>(value.saturation.denominator) + "'"
+                   ? " saturationDenominator='" + data::intToString(value.saturation.denominator) + "'"
                    : "")
-                 + " lightness='" + data::intToString<long long>(value.lightness.numerator) + "'"
+                 + " lightness='" + data::intToString(value.lightness.numerator) + "'"
                  + (value.lightness.denominator != math::numeric::one()
-                   ? " lightnessDenominator='" + data::intToString<long long>(value.lightness.denominator) + "'"
+                   ? " lightnessDenominator='" + data::intToString(value.lightness.denominator) + "'"
                    : "")
                  + "/>";
         }
 
         template <>
-        std::string xml (const colour::RGB<math::fraction>::value &value, bool small)
+        std::string xml (const colour::RGB<math::fraction>::value &pValue, bool small)
         {
+            colour::RGB<math::fraction>::value value = pValue;
+            value.red = math::numeric::round(value.red);
+            value.green = math::numeric::round(value.green);
+            value.blue = math::numeric::round(value.blue);
+
             return std::string("<colour xmlns='http://colouri.se/2012' space='rgb'")
                  + (small ? " type='small'" : "")
-                 + " red='" + data::intToString<long long>(value.red.numerator) + "'"
+                 + " red='" + data::intToString(value.red.numerator) + "'"
                  + (value.red.denominator != math::numeric::one()
-                   ? " redDenominator='" + data::intToString<long long>(value.red.denominator) + "'"
+                   ? " redDenominator='" + data::intToString(value.red.denominator) + "'"
                    : "")
-                 + " green='" + data::intToString<long long>(value.green.numerator) + "'"
+                 + " green='" + data::intToString(value.green.numerator) + "'"
                  + (value.green.denominator != math::numeric::one()
-                   ? " greenDenominator='" + data::intToString<long long>(value.green.denominator) + "'"
+                   ? " greenDenominator='" + data::intToString(value.green.denominator) + "'"
                    : "")
-                 + " blue='" + data::intToString<long long>(value.blue.numerator) + "'"
+                 + " blue='" + data::intToString(value.blue.numerator) + "'"
                  + (value.blue.denominator != math::numeric::one()
-                   ? " blueDenominator='" + data::intToString<long long>(value.blue.denominator) + "'"
+                   ? " blueDenominator='" + data::intToString(value.blue.denominator) + "'"
                    : "")
                  + "/>";
         }

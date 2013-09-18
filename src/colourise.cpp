@@ -41,6 +41,8 @@
 
 #include <ef.gy/render-xml.h>
 
+#include <ef.gy/continued-fractions.h>
+
 using namespace efgy::colour;
 using namespace efgy::math;
 using namespace efgy::render;
@@ -110,9 +112,9 @@ class processColourise
                         hNumerator %= hDenominator;
                     }
 
-                    HSL<fraction>::value t (fraction(hNumerator, hDenominator),
-                                            fraction(sNumerator, sDenominator),
-                                            fraction(lNumerator, lDenominator));
+                    HSL<fraction>::value t (round(fraction(hNumerator, hDenominator)),
+                                            round(fraction(sNumerator, sDenominator)),
+                                            round(fraction(lNumerator, lDenominator)));
 
                     reply  = "<set xmlns='http://colouri.se/2012'>";
                     reply += xml(t);
@@ -162,9 +164,9 @@ class processColourise
                         }
                     }
 
-                    RGB<fraction>::value t (fraction(rNumerator, rDenominator),
-                                            fraction(gNumerator, gDenominator),
-                                            fraction(bNumerator, bDenominator));
+                    RGB<fraction>::value t (round(fraction(rNumerator, rDenominator)),
+                                            round(fraction(gNumerator, gDenominator)),
+                                            round(fraction(bNumerator, bDenominator)));
 
                     reply  = "<set xmlns='http://colouri.se/2012'>";
                     reply += xml(t);
