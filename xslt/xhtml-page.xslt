@@ -17,6 +17,19 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template name="precision">
+    <xsl:param name="precision"/>
+    <ul id="precision">
+      <li>Precision: <xsl:value-of select="$precision"/></li>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="colour:precision">
+    <xsl:call-template name="precision">
+      <xsl:with-param name="precision" select="."/>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template match="/colour:set[colour:colour[1][@space='hsl']]">
     <xsl:variable name="hueDenominator"><xsl:choose>
       <xsl:when test="colour:colour[1]/@hueDenominator"><xsl:value-of select="colour:colour[1]/@hueDenominator"/></xsl:when>
@@ -41,6 +54,16 @@
           </xsl:for-each>
         </ul>
         <xsl:apply-templates select="colour:picker"/>
+        <xsl:choose>
+          <xsl:when test="colour:precision">
+            <xsl:apply-templates select="colour:precision"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="precision">
+              <xsl:with-param name="precision">24</xsl:with-param>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
       </body>
     </html>
   </xsl:template>
@@ -69,6 +92,16 @@
           </xsl:for-each>
         </ul>
         <xsl:apply-templates select="colour:picker"/>
+        <xsl:choose>
+          <xsl:when test="colour:precision">
+            <xsl:apply-templates select="colour:precision"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="precision">
+              <xsl:with-param name="precision">24</xsl:with-param>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
       </body>
     </html>
   </xsl:template>
@@ -86,8 +119,9 @@
       <xsl:when test="@lightnessDenominator"><xsl:value-of select="@lightnessDenominator"/></xsl:when>
       <xsl:otherwise>1</xsl:otherwise>
     </xsl:choose></xsl:variable>
+    <xsl:variable name="precision"><xsl:if test="preceding::colour:precision[1]">.<xsl:value-of select="preceding::colour:precision[1]"/></xsl:if></xsl:variable>
     <a style="background: hsl({@hue div $hueDenominator * 360},{@saturation div $saturationDenominator * 100}%,{@lightness div $lightnessDenominator * 100}%)"
-       href="/hsl:{@hue}/{$hueDenominator}:{@saturation}/{$saturationDenominator}:{@lightness}/{$lightnessDenominator}">
+       href="/hsl:{@hue}/{$hueDenominator}:{@saturation}/{$saturationDenominator}:{@lightness}/{$lightnessDenominator}{$precision}">
       <xsl:choose>
         <xsl:when test="@type='small'">
           <xsl:attribute name="class">colour small</xsl:attribute>
@@ -111,8 +145,9 @@
       <xsl:when test="@blueDenominator"><xsl:value-of select="@blueDenominator"/></xsl:when>
       <xsl:otherwise>1</xsl:otherwise>
     </xsl:choose></xsl:variable>
+    <xsl:variable name="precision"><xsl:if test="preceding::colour:precision[1]">.<xsl:value-of select="preceding::colour:precision[1]"/></xsl:if></xsl:variable>
     <a style="background: rgb({@red div $redDenominator * 100}%,{@green div $greenDenominator * 100}%,{@blue div $blueDenominator * 100}%)"
-       href="/rgb:{@red}/{$redDenominator}:{@green}/{$greenDenominator}:{@blue}/{$blueDenominator}">
+       href="/rgb:{@red}/{$redDenominator}:{@green}/{$greenDenominator}:{@blue}/{$blueDenominator}{$precision}">
       <xsl:choose>
         <xsl:when test="@type='small'">
           <xsl:attribute name="class">colour small</xsl:attribute>

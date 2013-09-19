@@ -61,7 +61,7 @@ class processColourise
                 ("/generated/(x?html|svg)/("
                   "(hsl:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
                  "|(rgb:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
-                 ")");
+                 ")(.(\\d+))?");
             boost::smatch matches;
 
             if (regex_match(a.resource, matches, rq))
@@ -69,6 +69,16 @@ class processColourise
                 string reply = string("<colour xmlns='http://colouri.se/2012'>")
                              + a.method + " " + a.resource
                              + "</colour>";
+
+                unsigned long precision = 24;
+                string sPrecision;
+
+                if (matches[24].matched)
+                {
+                    sPrecision = matches[24];
+                    precision = atoi(sPrecision.c_str());
+                    sPrecision = "<precision>" + sPrecision + "</precision>";
+                }
 
                 if (matches[3].matched) // hsl:x:y:z
                 {
@@ -112,17 +122,21 @@ class processColourise
                         hNumerator %= hDenominator;
                     }
 
-                    HSL<fraction>::value t (round(fraction(hNumerator, hDenominator)),
-                                            round(fraction(sNumerator, sDenominator)),
-                                            round(fraction(lNumerator, lDenominator)));
+                    HSL<fraction>::value t (round(fraction(hNumerator, hDenominator), precision),
+                                            round(fraction(sNumerator, sDenominator), precision),
+                                            round(fraction(lNumerator, lDenominator), precision));
 
                     reply  = "<set xmlns='http://colouri.se/2012'>";
-                    reply += xml(t);
+                    if (sPrecision != "")
+                    {
+                        reply += sPrecision;
+                    }
+                    reply += xml(t, false, precision);
 
                     RGB<fraction>::value tr = t;
-                    reply += xml(tr);
+                    reply += xml(tr, false, precision);
 
-                    reply += xmlpicker (t);
+                    reply += xmlpicker (t, precision);
 
                     reply += "</set>";
                 }
@@ -164,17 +178,21 @@ class processColourise
                         }
                     }
 
-                    RGB<fraction>::value t (round(fraction(rNumerator, rDenominator)),
-                                            round(fraction(gNumerator, gDenominator)),
-                                            round(fraction(bNumerator, bDenominator)));
+                    RGB<fraction>::value t (round(fraction(rNumerator, rDenominator), precision),
+                                            round(fraction(gNumerator, gDenominator), precision),
+                                            round(fraction(bNumerator, bDenominator), precision));
 
                     reply  = "<set xmlns='http://colouri.se/2012'>";
-                    reply += xml(t);
+                    if (sPrecision != "")
+                    {
+                        reply += sPrecision;
+                    }
+                    reply += xml(t, false, precision);
 
                     HSL<fraction>::value tr = t;
-                    reply += xml(tr);
+                    reply += xml(tr, false, precision);
 
-                    reply += xmlpicker (t);
+                    reply += xmlpicker (t, precision);
 
                     reply += "</set>";
                 }

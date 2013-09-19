@@ -305,6 +305,13 @@ namespace efgy
                         return data::intToString(numerator) + "/" + data::intToString(denominator);
                     }
 
+                    operator N (void) const
+                    {
+                        N rv = this->numerator;
+                        rv /= denominator;
+                        return rv;
+                    }
+
                     N numerator;
                     N denominator;
 

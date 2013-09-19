@@ -39,19 +39,19 @@ namespace efgy
     namespace render
     {
         template <class Q>
-        std::string xml (const Q &value, bool small = false)
+        std::string xml (const Q &value, bool small = false, const long &precision = 24)
         {
             throw "no conversion to XML known";
             return "";
         }
 
         template <>
-        std::string xml (const colour::HSL<math::fraction>::value &pValue, bool small)
+        std::string xml (const colour::HSL<math::fraction>::value &pValue, bool small, const long &precision)
         {
             colour::HSL<math::fraction>::value value = pValue;
-            value.hue = math::numeric::round(value.hue);
-            value.saturation = math::numeric::round(value.saturation);
-            value.lightness = math::numeric::round(value.lightness);
+            value.hue = math::numeric::round(value.hue, precision);
+            value.saturation = math::numeric::round(value.saturation, precision);
+            value.lightness = math::numeric::round(value.lightness, precision);
 
             return std::string("<colour xmlns='http://colouri.se/2012' space='hsl'")
                  + (small ? " type='small'" : "")
@@ -71,12 +71,12 @@ namespace efgy
         }
 
         template <>
-        std::string xml (const colour::RGB<math::fraction>::value &pValue, bool small)
+        std::string xml (const colour::RGB<math::fraction>::value &pValue, bool small, const long &precision)
         {
             colour::RGB<math::fraction>::value value = pValue;
-            value.red = math::numeric::round(value.red);
-            value.green = math::numeric::round(value.green);
-            value.blue = math::numeric::round(value.blue);
+            value.red = math::numeric::round(value.red, precision);
+            value.green = math::numeric::round(value.green, precision);
+            value.blue = math::numeric::round(value.blue, precision);
 
             return std::string("<colour xmlns='http://colouri.se/2012' space='rgb'")
                  + (small ? " type='small'" : "")
@@ -96,7 +96,7 @@ namespace efgy
         }
 
         template <class Q>
-        std::string xmlpicker (const Q &value)
+        std::string xmlpicker (const Q &value, const long &precision = 24)
         {
             throw "no conversion to XML known";
             return "";
@@ -105,7 +105,7 @@ namespace efgy
         static const int pickerResolution = 8;
 
         template <class Q>
-        std::string xmlpicker3d (const typename Q::value &value)
+        std::string xmlpicker3d (const typename Q::value &value, const long &precision = 24)
         {
             std::string s = "<picker xmlns='http://colouri.se/2012'>";
             typename Q::value v = value;
@@ -136,7 +136,7 @@ namespace efgy
                 for (int x = -pickerResolution; x <= pickerResolution; x++)
                 {
                     v.data[0] = (x < 0) ? (value.data[0] - al * -x) : (value.data[0] + ar * x);
-                    s += xml (v, true);
+                    s += xml (v, true, precision);
                 }
                 s += "</set>";
             }
@@ -147,7 +147,7 @@ namespace efgy
             for (int z = -pickerResolution; z <= pickerResolution; z++)
             {
                 v.data[2] = (z < 0) ? (value.data[2] - cl * -z) : (value.data[2] + cr * z);
-                s += xml (v, true);
+                s += xml (v, true, precision);
             }
             s += "</set>";
 
@@ -155,15 +155,15 @@ namespace efgy
         }
 
         template <>
-        std::string xmlpicker (const colour::HSL<math::fraction>::value &value)
+        std::string xmlpicker (const colour::HSL<math::fraction>::value &value, const long &precision)
         {
-            return xmlpicker3d<colour::HSL<math::fraction> > (value);
+            return xmlpicker3d<colour::HSL<math::fraction> > (value, precision);
         }
 
         template <>
-        std::string xmlpicker (const colour::RGB<math::fraction>::value &value)
+        std::string xmlpicker (const colour::RGB<math::fraction>::value &value, const long &precision)
         {
-            return xmlpicker3d<colour::RGB<math::fraction> > (value);
+            return xmlpicker3d<colour::RGB<math::fraction> > (value, precision);
         }
     };
 };
