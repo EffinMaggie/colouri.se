@@ -308,8 +308,6 @@ namespace efgy
                                 bool xInf = false, yInf = false, rInf = false;
                                 while (1)
                                 {
-                                    std::cerr << "( " << data::intToString(op.a) << " " << data::intToString(op.b) << " " << data::intToString(op.c) << " " << data::intToString(op.d) << " )\n"
-                                              << "( " << data::intToString(op.e) << " " << data::intToString(op.f) << " " << data::intToString(op.g) << " " << data::intToString(op.h) << " )\n";
                                     fractional<N> ae = fractional<N>(op.a, op.e),
                                                   bf = fractional<N>(op.b, op.f),
                                                   cg = fractional<N>(op.c, op.g),
@@ -326,11 +324,9 @@ namespace efgy
                                     {
                                         if ((rae == rbf) && (rbf == rcg) && (rcg == rdh))
                                         {
-                                            std::cerr << "=>" << data::intToString(rae) << "\n";
                                             rv = (rv, rae);
                                             if ((op.a < zero()) && (op.b < zero()) && (op.c < zero()) && (op.d < zero()))
                                             {
-                                                std::cerr << "negative result\n";
                                                 rv.negative = true;
                                             }
                                             op = op.output (rae);
@@ -378,13 +374,11 @@ namespace efgy
                                     processX:
                                         if (px < x.coefficientCount)
                                         {
-                                            std::cerr << "x() = " << x.coefficient[px] << "\n";
                                             op = op.insertX (x.coefficient[px]);
                                             px++;
                                         }
                                         else if (!xInf)
                                         {
-                                            std::cerr << "x() = inf\n";
                                             op = op.insertXinf ();
                                             xInf = true;
                                         }
@@ -398,13 +392,11 @@ namespace efgy
                                     processY:
                                         if (py < y.coefficientCount)
                                         {
-                                            std::cerr << "y() = " << y.coefficient[py] << "\n";
                                             op = op.insertY (y.coefficient[py]);
                                             py++;
                                         }
                                         else if (!yInf)
                                         {
-                                            std::cerr << "y() = inf\n";
                                             op = op.insertYinf ();
                                             yInf = true;
                                         }
