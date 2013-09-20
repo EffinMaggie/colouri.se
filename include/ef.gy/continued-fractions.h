@@ -44,15 +44,15 @@ namespace efgy
                     typedef N integer;
 
                     continuedFractional ()
-                        : coefficientCount(N(0)), coefficient(N(0))
+                        : coefficientCount(N(0)), coefficient(N(0)), negative(false)
                         {}
                     continuedFractional (const N &t)
-                        : coefficientCount(N(1)), coefficient(N(1))
+                        : coefficientCount(N(1)), coefficient(N(1)), negative(false)
                         {
                             coefficient[0] = t;
                         }
                     continuedFractional (const fractional<N> &pF)
-                        : coefficientCount(N(0)), coefficient(N(0))
+                        : coefficientCount(N(0)), coefficient(N(0)), negative(false)
                         {
                             N i = N(0);
                             N p = N(0);
@@ -66,7 +66,16 @@ namespace efgy
                                 p = coefficientCount;
                                 coefficientCount = p + N(1);
                                 coefficient.resize(coefficientCount);
-                                coefficient[p] = i;
+
+                                if (i < zero())
+                                {
+                                    coefficient[p] = -i;
+                                    negative = true;
+                                }
+                                else
+                                {
+                                    coefficient[p] = i;
+                                }
 
                                 if (f < zero())
                                 {
@@ -83,20 +92,30 @@ namespace efgy
                             }
                         }
                     continuedFractional (const continuedFractional &cf)
-                        : coefficientCount(cf.coefficientCount), coefficient(cf.coefficient)
+                        : coefficientCount(cf.coefficientCount), coefficient(cf.coefficient), negative(cf.negative)
                         {}
 
                     continuedFractional &operator = (const continuedFractional &b)
                     {
                         coefficientCount = b.coefficientCount;
                         coefficient = b.coefficient;
+                        negative = b.negative;
                         return *this;
                     }
                     continuedFractional &operator = (const N &b)
                     {
                         coefficientCount = N(1);
                         coefficient.resize(coefficientCount);
-                        coefficient[N(0)] = b;
+                        if (b < zero())
+                        {
+                            coefficient[N(0)] = -b;
+                            negative = true;
+                        }
+                        else
+                        {
+                            coefficient[N(0)] = b;
+                            negative = false;
+                        }
                         return *this;
                     }
                     continuedFractional &operator = (const fractional<N> &b)
@@ -109,45 +128,93 @@ namespace efgy
                         binaryOperator op = binaryOperator::addition();
                         return op (*this, b);
                     }
-                    continuedFractional &operator += (const continuedFractional &b);
-                    continuedFractional operator + (const N &b) const;
-                    continuedFractional &operator += (const N &b);
+                    continuedFractional &operator += (const continuedFractional &b)
+                    {
+                        (*this) = (*this + b);
+                    }
 
-                    continuedFractional operator - (const continuedFractional &b) const;
-                    continuedFractional &operator -= (const continuedFractional &b);
-                    continuedFractional operator - (const N &b) const;
-                    continuedFractional &operator -= (const N &b);
-                    continuedFractional operator * (const continuedFractional &b) const;
-                    continuedFractional &operator *= (const continuedFractional &b);
-                    continuedFractional operator * (const N &b) const;
-                    continuedFractional &operator *= (const N &b);
+                    continuedFractional operator - (const continuedFractional &b) const
+                    {
+                        binaryOperator op = binaryOperator::subtraction();
+                        return op (*this, b);
+                    }
+                    continuedFractional &operator -= (const continuedFractional &b)
+                    {
+                        (*this) = (*this - b);
+                    }
 
-                    // missing: %
+                    continuedFractional operator * (const continuedFractional &b) const
+                    {
+                        binaryOperator op = binaryOperator::multiplication();
+                        return op (*this, b);
+                    }
+                    continuedFractional &operator *= (const continuedFractional &b)
+                    {
+                        (*this) = (*this * b);
+                    }
 
-                    continuedFractional operator ^ (const N &b) const;
-                    continuedFractional &operator ^= (const N &b);
+                    // missing: %, ^
 
-                    // missing: ^ (fraction)
-
-                    continuedFractional operator / (const continuedFractional &b) const;
-                    continuedFractional &operator /= (const continuedFractional &b);
-                    continuedFractional operator / (const N &b) const;
-                    continuedFractional &operator /= (const N &b);
+                    continuedFractional operator / (const continuedFractional &b) const
+                    {
+                        binaryOperator op = binaryOperator::division();
+                        return op (*this, b);
+                    }
+                    continuedFractional &operator /= (const continuedFractional &b)
+                    {
+                        (*this) = (*this / b);
+                    }
 
                     // missing: >, >=, <, <=
                     //
                     bool operator > (const continuedFractional &b) const;
-                    bool operator > (const zero &b) const;
-                    bool operator > (const one &b) const;
-                    bool operator > (const negativeOne &b) const;
-                    bool operator == (const continuedFractional &b) const;
-                    bool operator == (const zero &b) const;
-                    bool operator == (const one &b) const;
-                    bool operator == (const negativeOne &b) const;
+                    bool operator > (const zero &b) const
+                    {
+                        return (   (coefficientCount > N(1))
+                                || ((coefficientCount == N(1)) && (coefficient[N(0)] > zero())))
+                            && !negative;
+                    }
+                    bool operator > (const one &b) const
+                    {
+                        return (   ((coefficientCount > N(1)) && (coefficient[N(0)] >= N(1)))
+                                || ((coefficientCount >= N(1)) && (coefficient[N(0)] > N(1))))
+                            && !negative;
+                    }
+                    bool operator > (const negativeOne &b) const
+                    {
+                        return !negative
+                            || (coefficientCount == zero())
+                            || (coefficient[N(0)] == zero());
+                    }
 
-                    continuedFractional operator , (const N &b) const
+                    bool operator == (const continuedFractional &b) const;
+                    bool operator == (const zero &b) const
+                    {
+                        return (coefficientCount == zero())
+                            || (coefficient[N(0)] == zero());
+                    }
+                    bool operator == (const one &b) const
+                    {
+                        return !negative
+                            && (coefficientCount == N(1))
+                            && (coefficient[N(0)] == N(1));
+                    }
+                    bool operator == (const negativeOne &b) const
+                    {
+                        return negative
+                            && (coefficientCount == N(1))
+                            && (coefficient[N(0)] == N(1));
+                    }
+
+                    continuedFractional operator , (const N &pB) const
                     {
                         continuedFractional rv = *this;
+                        N b = pB;
+                        if (b < zero())
+                        {
+                            rv.negative = true;
+                            b = -b;
+                        }
                         N p = rv.coefficientCount;
                         rv.coefficientCount++;
                         rv.coefficient.resize(rv.coefficientCount);
@@ -165,6 +232,10 @@ namespace efgy
                         }
 
                         std::string r = "[";
+                        if (negative)
+                        {
+                            r = "- " + r;
+                        }
                         for (N i = N(0); i < coefficientCount; i++)
                         {
                             if (i == N(0))
@@ -199,11 +270,16 @@ namespace efgy
                                 rv = reciprocal(rv) + coefficient[i];
                             }
                         }
+                        if (negative)
+                        {
+                            rv *= N(-1);
+                        }
                         return rv;
                     }
 
                     data::scratchPad<N> coefficient;
                     N coefficientCount;
+                    bool negative;
 
                 protected:
                     class binaryOperator
@@ -251,8 +327,13 @@ namespace efgy
                                         if ((rae == rbf) && (rbf == rcg) && (rcg == rdh))
                                         {
                                             std::cerr << "=>" << data::intToString(rae) << "\n";
-                                            op = op.output (rae);
                                             rv = (rv, rae);
+                                            if ((op.a < zero()) && (op.b < zero()) && (op.c < zero()) && (op.d < zero()))
+                                            {
+                                                std::cerr << "negative result\n";
+                                                rv.negative = true;
+                                            }
+                                            op = op.output (rae);
                                             continue;
                                         }
                                     }
@@ -277,18 +358,11 @@ namespace efgy
                                         break;
                                     }
 
-                                    fractional<N> aecg = ae - cg;
-                                    fractional<N> bfdh = bf - dh;
-                                    fractional<N> aebf = ae - bf;
-                                    fractional<N> cgdh = cg - dh;
+                                    fractional<N> bfae = bf - ae;
+                                    fractional<N> cgae = cg - ae;
 
-                                    if (aecg < zero()) { aecg *= N(-1); }
-                                    if (bfdh < zero()) { bfdh *= N(-1); }
-                                    if (aebf < zero()) { aebf *= N(-1); }
-                                    if (cgdh < zero()) { cgdh *= N(-1); }
-
-                                    fractional<N> xw = (aecg > bfdh) ? aecg : bfdh;
-                                    fractional<N> yw = (aebf > cgdh) ? aebf : cgdh;
+                                    if (bfae < zero()) { bfae *= N(-1); }
+                                    if (cgae < zero()) { cgae *= N(-1); }
 
                                     if ((op.f == zero()) || (op.h == zero()))
                                     {
@@ -299,7 +373,7 @@ namespace efgy
                                         goto processX;
                                     }
 
-                                    if ((op.g == zero()) || (xw > yw))
+                                    if (bfae > cgae)
                                     {
                                     processX:
                                         if (px < x.coefficientCount)

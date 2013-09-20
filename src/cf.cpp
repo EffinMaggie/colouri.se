@@ -39,10 +39,10 @@ int main (int argc, char* argv[])
     try
     {
         numeric::continuedFractional<number> cfa, cfb, cfc;
-        numeric::fractional<number> af, bf(54,91), cf(76,131);
+        numeric::fractional<number> af, bf(54,92), cf(76,131);
         cfb = bf;
         cfc = cf;
-        cfa = cfb + cfc;
+        cfa = cfc - cfb;
         af = cfa;
         std::cerr << string(cfa) << " = " << string(af) << "\n"
                   << string(cfb) << " = " << string(bf) << "\n"
