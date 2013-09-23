@@ -480,8 +480,9 @@ namespace efgy
             template <typename N>
             fractional<N> round
                 (const fractional<N> &pQ,
-                 const unsigned long precision = 24)
+                 const unsigned long pPrecision = 24)
             {
+                unsigned long precision = pPrecision == 0 ? 1 : pPrecision;
                 const unsigned long long maxNumerator = (1 << precision) - 1;
                 const unsigned long long maxDenominator = (1 << precision) - 1;
                 continuedFractional<N> cf = pQ;

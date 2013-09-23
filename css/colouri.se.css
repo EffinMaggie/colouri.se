@@ -79,9 +79,15 @@ h1 + ul
 {
     padding: 1em;
     text-align: right;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     right: 0;
+    left: 0;
+}
+
+h1 + ul:hover
+{
+    background: rgba(100%,100%,100%,0.8);
 }
 
 h1 + ul li
@@ -104,4 +110,20 @@ a:hover
 {
     text-decoration: underline;
     color: #777;
+}
+
+ul#precision
+{
+    margin: 0 -0.5em;
+}
+
+ul#precision li
+{
+    display: inline-block;
+    margin: 0.5em;
+}
+
+ul#precision li.current
+{
+    font-size: 1.25em;
 }
