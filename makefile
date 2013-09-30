@@ -12,10 +12,10 @@ DATABASES:=colourise.sqlite3
 .SECONDARY:
 
 # meta rules
-all: $(DATABASES) colourise cf
+all: $(DATABASES) colourise
 run: run-colourise
 clean:
-	rm -f $(DATABASES) colourise cf; true
+	rm -f $(DATABASES) colourise; true
 scrub: clean
 
 # pattern rules for databases
@@ -29,6 +29,3 @@ scrub: clean
 # specific rule to run the colourise daemon
 run-colourise: colourise
 	killall colourise; rm -f /var/tmp/colourise.socket && (nohup ./colourise /var/tmp/colourise.socket &) && sleep 1 && chmod a+w /var/tmp/colourise.socket
-
-test: cf
-	./cf
