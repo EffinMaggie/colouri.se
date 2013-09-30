@@ -30,8 +30,6 @@
 #include <ef.gy/fractions.h>
 #include <ef.gy/colour-space-hsl.h>
 
-#include <cstdlib>
-
 #include <iostream>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/replace.hpp>
