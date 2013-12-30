@@ -24,7 +24,7 @@ scrub: clean
 
 # specific rule to build the colourise daemon
 %: src/%.cpp include/ef.gy/*.h
-	clang++ -Iinclude/ -O2 $< -lboost_system -lboost_regex -lboost_filesystem -lboost_iostreams -o $@ && strip -x $@
+	clang++ -std=c++0x -Iinclude/ -O2 $< -lboost_system -lboost_regex -lboost_filesystem -lboost_iostreams -o $@ && strip -x $@
 
 # specific rule to run the colourise daemon
 run-colourise: colourise
