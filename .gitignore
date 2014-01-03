@@ -2,3 +2,5 @@
 ._*
 *.swp
 *.cache.xml
+include/ef.gy
+nohup.out

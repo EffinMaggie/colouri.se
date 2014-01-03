@@ -120,7 +120,7 @@ class processColourise
                         hNumerator %= hDenominator;
                     }
 
-                    HSL<fraction>::value t (round(fraction(hNumerator, hDenominator), precision),
+                    HSL<fraction>::vector t (round(fraction(hNumerator, hDenominator), precision),
                                             round(fraction(sNumerator, sDenominator), precision),
                                             round(fraction(lNumerator, lDenominator), precision));
 
@@ -131,7 +131,7 @@ class processColourise
                     }
                     reply += xml(t, false, precision);
 
-                    RGB<fraction>::value tr = t;
+                    RGB<fraction>::vector tr = t;
                     reply += xml(tr, false, precision);
 
                     reply += xmlpicker (t, precision);
@@ -176,7 +176,7 @@ class processColourise
                         }
                     }
 
-                    RGB<fraction>::value t (round(fraction(rNumerator, rDenominator), precision),
+                    RGB<fraction>::vector t (round(fraction(rNumerator, rDenominator), precision),
                                             round(fraction(gNumerator, gDenominator), precision),
                                             round(fraction(bNumerator, bDenominator), precision));
 
@@ -187,7 +187,7 @@ class processColourise
                     }
                     reply += xml(t, false, precision);
 
-                    HSL<fraction>::value tr = t;
+                    HSL<fraction>::vector tr = t;
                     reply += xml(tr, false, precision);
 
                     reply += xmlpicker (t, precision);
