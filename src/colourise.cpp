@@ -61,9 +61,7 @@ class processColourise
 
             if (regex_match(a.resource, matches, rq))
             {
-                string reply = string("<colour xmlns='http://colouri.se/2012'>")
-                             + a.method + " " + a.resource
-                             + "</colour>";
+                ostringstream reply ("");
 
                 unsigned long precision = 24;
                 string sPrecision;
@@ -71,7 +69,7 @@ class processColourise
                 if (matches[24].matched)
                 {
                     sPrecision = matches[24];
-                    precision = atoi(sPrecision.c_str());
+                    precision  = atoi(sPrecision.c_str());
                     sPrecision = "<precision>" + sPrecision + "</precision>";
                 }
 
@@ -121,22 +119,21 @@ class processColourise
                                             round(fraction(sNumerator, sDenominator), precision),
                                             round(fraction(lNumerator, lDenominator), precision));
 
-                    reply  = "<set xmlns='http://colouri.se/2012'>";
+                    reply << "<set xmlns='http://colouri.se/2012'>";
                     if (sPrecision != "")
                     {
-                        reply += sPrecision;
+                        reply << sPrecision;
                     }
-                    reply += xml(t, false, precision);
+                    reply << XML() << render::precision(precision) << t;
 
                     math::vector<fraction,3,format::RGB> tr = t;
-                    reply += xml(tr, false, precision);
+                    reply << XML() << render::precision(precision) << tr;
 
-                    reply += xmlpicker (t, precision);
+                    (reply << XML() << render::precision(precision)) |= tr;
 
-                    reply += "</set>";
+                    reply << "</set>";
                 }
-
-                if (matches[13].matched) // rgb:x:y:z
+                else if (matches[13].matched) // rgb:x:y:z
                 {
                     long rNumerator = atoi(string(matches[14]).c_str());
                     long gNumerator = atoi(string(matches[17]).c_str());
@@ -177,25 +174,31 @@ class processColourise
                                             round(fraction(gNumerator, gDenominator), precision),
                                             round(fraction(bNumerator, bDenominator), precision));
 
-                    reply  = "<set xmlns='http://colouri.se/2012'>";
+                    reply << "<set xmlns='http://colouri.se/2012'>";
                     if (sPrecision != "")
                     {
-                        reply += sPrecision;
+                        reply << sPrecision;
                     }
-                    reply += xml(t, false, precision);
+                    reply << XML() << render::precision(precision) << t;
 
                     math::vector<fraction,3,format::HSL> tr = t;
-                    reply += xml(tr, false, precision);
+                    reply << XML() << render::precision(precision) << tr;
 
-                    reply += xmlpicker (t, precision);
+                    (reply << XML() << render::precision(precision)) |= tr;
 
-                    reply += "</set>";
+                    reply << "</set>";
+                }
+                else
+                {
+                    reply << string("<colour xmlns='http://colouri.se/2012'>")
+                          << a.method << " " << a.resource
+                          << "</colour>";
                 }
 
                 a.reply (200,
                          "Content-Type: text/xml; charset=utf-8\r\n",
                          string("<?xml version='1.0' encoding='utf-8'?>")
-                         + reply);
+                         + reply.str());
             }
             else
             {
