@@ -31,9 +31,7 @@
 #include <ef.gy/colour-space-hsl.h>
 
 #include <iostream>
-#include <boost/regex.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -45,7 +43,6 @@ using namespace efgy;
 using namespace efgy::math;
 using namespace efgy::render;
 using namespace boost::filesystem; 
-using namespace boost::iostreams;
 using namespace boost::asio;
 using namespace boost;
 using namespace std;
@@ -55,12 +52,12 @@ class processColourise
     public:
         bool operator () (efgy::net::http::session<processColourise> &a)
         {
-            static const regex rq
+            static const std::regex rq
                 ("/generated/(x?html|svg)/("
                   "(hsl:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
                  "|(rgb:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?:(-?\\d+)(/(-?\\d+))?)"
                  ")(.(\\d+))?");
-            boost::smatch matches;
+            std::smatch matches;
 
             if (regex_match(a.resource, matches, rq))
             {
